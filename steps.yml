@@ -1,7 +1,7 @@
 jobs:
 - job: TrivySbom
   steps:
-    - script: wget 
+    - script: curl https://raw.githubusercontent.com/joseniltoncabral/help-diego/main/scripts/install_trivy.sh | sh
       displayName: 'Download Tool'
     - script: trivy fs --format cyclonedx --output $(Agent.BuildDirectory)/sbom.json $(Build.SourcesDirectory)
       displayName: 'Run Command'
