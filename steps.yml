@@ -5,7 +5,8 @@ jobs:
       displayName: 'Download Trivy'
 
 - job: TrivySbom
-  dependsOn: InstallTrivy
+  dependsOn: 
+    - InstallTrivy
   steps:
     - script: trivy fs --format cyclonedx --output $(Agent.BuildDirectory)/sbom.json $(Build.SourcesDirectory)
       displayName: 'Run Command'
@@ -13,7 +14,9 @@ jobs:
       displayName: 'View File'
       
 - job: TrivySCA
-  dependsOn: TrivySbom
+  dependsOn: 
+    - InstallTrivy
+    - TrivySbom
   steps:
     - script: trivy sbom $(Agent.BuildDirectory)/sbom.json --format json
       displayName: 'Run Command'
@@ -24,6 +27,8 @@ jobs:
       displayName: 'Download Gitleaks'
 
 - job: GitLeaks
+  dependsOn: 
+    - InstallGitleaks
   steps:
     - script: gitleaks detect -v --source="$(Build.SourcesDirectory)" --report-path="$(Agent.BuildDirectory)/gitleaks.json" --exit-code 0 --report-format="json"
       displayName: 'Run Command'
