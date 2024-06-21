@@ -1,0 +1,8 @@
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: joseniltoncabral/help-diego
+
+jobs:
+- template: steps.yml@templates
