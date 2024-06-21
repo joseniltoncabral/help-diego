@@ -3,6 +3,7 @@ resources:
     - repository: templates
       type: github
       name: joseniltoncabral/help-diego
+      ref: main
 
 jobs:
-- template: azure-pipelines.yml@templates
+- template: steps.yml@templates
