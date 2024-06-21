@@ -1,0 +1,32 @@
+jobs:
+- job: TrivySbom
+  steps:
+    - script: |
+        VERSION="0.52.1"
+        curl -fsSL "https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz" -o trivy.tar.gz
+        tar -C /usr/local/bin -xzf trivy.tar.gz
+        chmod +x /usr/local/bin/trivy
+      displayName: 'Download Tool'
+    - script: trivy fs --format cyclonedx --output $(Agent.BuildDirectory)/sbom.json $(Build.SourcesDirectory)
+      displayName: 'Run Command'
+    - script: cat $(Agent.BuildDirectory)/sbom.json
+      displayName: 'View File'
+      
+- job: TrivySCA
+  dependsOn: TrivySbom
+  steps:
+    - script: trivy sbom $(Agent.BuildDirectory)/sbom.json --format json
+      displayName: 'Run Command'
+
+- job: GitLeaks
+  steps:
+    - script: |
+        VERSION="8.18.2"
+        curl -fsSL "https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_x64.tar.gz" -o gitleaks.tar.gz
+        tar -C /usr/local/bin -xzf gitleaks.tar.gz
+        chmod +x /usr/local/bin/gitleaks
+      displayName: 'Download Tool'
+    - script: gitleaks detect -v --source="$(Build.SourcesDirectory)" --report-path="$(Agent.BuildDirectory)/gitleaks.json" --exit-code 0 --report-format="json"
+      displayName: 'Run Command'
+    - script: cat $(Agent.BuildDirectory)/gitleaks.json
+      displayName: 'View File'
