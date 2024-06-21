@@ -4,6 +4,7 @@ resources:
       type: github
       name: joseniltoncabral/help-diego
       ref: main
+      endpoint: # project / service connection / github
 
 jobs:
 - template: steps.yml@templates
