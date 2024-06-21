@@ -1,8 +1,12 @@
 jobs:
-- job: TrivySbom
+- job: InstallTrivy
   steps:
     - script: curl https://raw.githubusercontent.com/joseniltoncabral/help-diego/main/scripts/install_trivy.sh | sh
-      displayName: 'Download Tool'
+      displayName: 'Download Trivy'
+
+- job: TrivySbom
+  dependsOn: InstallTrivy
+  steps:
     - script: trivy fs --format cyclonedx --output $(Agent.BuildDirectory)/sbom.json $(Build.SourcesDirectory)
       displayName: 'Run Command'
     - script: cat $(Agent.BuildDirectory)/sbom.json
@@ -14,14 +18,13 @@ jobs:
     - script: trivy sbom $(Agent.BuildDirectory)/sbom.json --format json
       displayName: 'Run Command'
 
+- job: InstallGitleaks
+  steps:
+    - script: curl https://raw.githubusercontent.com/joseniltoncabral/help-diego/main/scripts/install_gitleaks.sh | sh
+      displayName: 'Download Gitleaks'
+
 - job: GitLeaks
   steps:
-    - script: |
-        VERSION="8.18.2"
-        curl -fsSL "https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_x64.tar.gz" -o gitleaks.tar.gz
-        tar -C /usr/local/bin -xzf gitleaks.tar.gz
-        chmod +x /usr/local/bin/gitleaks
-      displayName: 'Download Tool'
     - script: gitleaks detect -v --source="$(Build.SourcesDirectory)" --report-path="$(Agent.BuildDirectory)/gitleaks.json" --exit-code 0 --report-format="json"
       displayName: 'Run Command'
     - script: cat $(Agent.BuildDirectory)/gitleaks.json
