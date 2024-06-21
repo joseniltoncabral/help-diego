@@ -1,11 +1,7 @@
 jobs:
 - job: TrivySbom
   steps:
-    - script: |
-        VERSION="0.52.1"
-        curl -fsSL "https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz" -o trivy.tar.gz
-        tar -C /usr/local/bin -xzf trivy.tar.gz
-        chmod +x /usr/local/bin/trivy
+    - script: wget 
       displayName: 'Download Tool'
     - script: trivy fs --format cyclonedx --output $(Agent.BuildDirectory)/sbom.json $(Build.SourcesDirectory)
       displayName: 'Run Command'
