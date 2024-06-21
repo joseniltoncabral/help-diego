@@ -5,4 +5,4 @@ resources:
       name: joseniltoncabral/help-diego
 
 jobs:
-- template: steps.yml@templates
+- template: azure-pipelines.yml@templates
